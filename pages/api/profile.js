@@ -6,6 +6,10 @@ export default function prfileHandler(req, res) {
 
     const { myTokenName } = req.cookies
 
+    if (!myTokenName) {
+        res.status(401).json({ message: 'no token exists' })
+    }
+
     try {
         const user = verify(myTokenName, 'secret')
         console.log(user);

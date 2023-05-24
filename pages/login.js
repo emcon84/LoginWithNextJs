@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 
 const login = () => {
@@ -7,6 +8,8 @@ const login = () => {
         email: '',
         password: ''
     })
+
+    const router = useRouter();
 
     const handleChange = (e) => {
         const name = e.target.name;
@@ -22,6 +25,9 @@ const login = () => {
         console.log(credentials)
         const response = await axios.post('/api/auth/login', credentials)
         console.log(response);
+        if (response.status === 200) {
+            router.push('/dashboard');
+        }
     }
 
     return (

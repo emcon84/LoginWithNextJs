@@ -1,5 +1,6 @@
 import axios from 'axios'
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const dashboard = () => {
 
@@ -8,10 +9,19 @@ const dashboard = () => {
         username: '',
     })
 
+    const router = useRouter();
+
     const getProfile = async () => {
         const response = await axios.get('/api/profile');
         console.log(response)
         setUser(response.data);
+    }
+
+    const logout = async () => {
+        const response = await axios.get('/api/auth/logout');
+        console.log(response)
+        setUser(response.data);
+        router.push('/login');
     }
 
     return (
@@ -21,6 +31,10 @@ const dashboard = () => {
 
             <button onClick={() => getProfile()}>
                 get Profile
+            </button>
+
+            <button onClick={() => logout()}>
+                logout
             </button>
         </div>
     )
