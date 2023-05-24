@@ -1,21 +1,12 @@
-import { verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
-export default function prfileHandler(req, res) {
-
-    console.log(req.cookies);
-
-    const { myTokenName } = req.cookies
+export default function profileHandler(req, res) {
+    const { myTokenName } = req.cookies;
 
     if (!myTokenName) {
-        res.status(401).json({ message: 'no token exists' })
+        return res.status(401).json({ error: "Not logged in" });
     }
 
-    try {
-        const user = verify(myTokenName, 'secret')
-        console.log(user);
-        return res.json({ user: user.email, username: user.username });
-    } catch (error) {
-        return res.status(401).json({ error: 'Invalid Token' })
-    }
-
+    const { email } = jwt.verify(myTokenName, "secret");
+    return res.status(200).json({ email });
 }

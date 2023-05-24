@@ -1,38 +1,33 @@
-import jwt from 'jsonwebtoken'
-import { serialize } from 'cookie'
+import { sign } from "jsonwebtoken";
+import { serialize } from "cookie";
 
 export default function loginHandler(req, res) {
+    const { email, password } = req.body;
 
-    console.log(req.body)
+    if (email === "admin@local.local" && password === "admin") {
+        // expire in 30 days
+        const token = sign(
+            {
+                exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30,
+                email,
+                username: "emcon",
+            },
+            "secret"
+        );
 
-    const { email, password } = req.body
-
-    //check if email and password are valid
-
-    // if email exists
-
-    // if password is correct
-
-    if (email === 'admin@local.com' && password === 'admin') {
-        const token = jwt.sign({
-            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30,
-            email: 'admin@local.com',
-            username: 'emcon'
-        }, 'secret')
-
-        const serialized = serialize('myTokenName', token, {
+        const serialized = serialize("myTokenName", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV !== 'development',
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 24 * 30,
-            path: '/'
-        })
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            path: "/",
+        });
 
-        res.setHeader('Set-Cookie', serialized)
-        return res.json('login successfully')
+        res.setHeader("Set-Cookie", serialized);
+        return res.status(200).json({
+            message: "Login successful",
+        });
     }
 
-
-    return res.status(401).json({ error: 'login failed' });
-
+    return res.status(401).json({ error: "Invalid credentials" });
 }
